@@ -10,7 +10,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
     /**
      * Send an email verification notification to the user.
      */
+    public function logout(Logout $logout): void
+    {
+        $logout();
 
+        $this->redirect('/', navigate: true);
+    }
 
 }; ?>
 

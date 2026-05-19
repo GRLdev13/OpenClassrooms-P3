@@ -2,12 +2,18 @@
 
 namespace App\Controllers\Index;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class IndexController
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
-        return view('livewire.auth.login');
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('user.login');
     }
 }

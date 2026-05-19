@@ -2,20 +2,12 @@
 
 namespace App\Controllers\User;
 
-use Livewire\Component;
-use App\Models\Tag;
-use Illuminate\Auth\Events\Lockout;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Validate;
 
- class UserController extends Controller
+class UserController extends Controller
 {
     public function login(): void
     {
@@ -39,9 +31,14 @@ use Livewire\Attributes\Validate;
         */
     }
 
-    public function Logout(): void {
+    public function logout(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
 
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
+        return redirect()->route('login');
     }
 
     public function register(): void
