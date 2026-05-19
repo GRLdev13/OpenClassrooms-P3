@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Controllers\Notes;
 
 use Livewire\Component;
 use App\Models\Note;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 
-class Notes extends Component
+class NotesController
 {
-    public $notes;
+    // public $notes;
     public $text = '';
     public $tag_id = '';
     public $tags;
