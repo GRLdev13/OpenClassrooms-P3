@@ -5,8 +5,10 @@
 
     <h2 class="text-xl font-bold">Add a tag</h2>
 
-    <form wire:submit.prevent="save" class="space-y-2">
-        <input type="text" wire:model="name" placeholder="New tag name"
+    <form method="POST" action="{{ route('tags.store') }}" class="space-y-2">
+        @csrf
+
+        <input type="text" name="name" value="{{ old('name') }}" placeholder="New tag name"
                class="border rounded px-3 py-1 text-sm w-full" />
         <button type="submit" class="bg-blue-500 text-white px-4 py-2">
             Add Tag

@@ -4,6 +4,8 @@ namespace App\Controllers\Index;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\View;
+use App\Models\Note;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 
 class IndexController
@@ -15,5 +17,13 @@ class IndexController
         }
 
         return view('user.login');
+    }
+
+    public function dashboard(): View
+    {
+        return view('dashboard', [
+            'notes' => Note::with('tag')->where('user_id', Auth::id())->latest()->get(),
+            'tags' => Tag::orderBy('name')->get(),
+        ]);
     }
 }

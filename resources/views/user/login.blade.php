@@ -5,10 +5,13 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form wire:submit="login" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-6">
+            @csrf
+
             <!-- Email Address -->
             <flux:input
-                wire:model="email"
+                name="email"
+                :value="old('email')"
                 :label="__('Email address')"
                 type="email"
                 required
@@ -20,7 +23,7 @@
             <!-- Password -->
             <div class="relative">
                 <flux:input
-                    wire:model="password"
+                    name="password"
                     :label="__('Password')"
                     type="password"
                     required
@@ -40,7 +43,7 @@
             <!-- <flux:checkbox wire:model="remember" :label="__('Remember me')" /> -->
 
             <div class="flex items-center justify-end">
-                <flux:button type="button" class="w-full">{{ __('Log in') }}</flux:button>
+                <flux:button type="submit" class="w-full">{{ __('Log in') }}</flux:button>
             </div>
         </form>
 
