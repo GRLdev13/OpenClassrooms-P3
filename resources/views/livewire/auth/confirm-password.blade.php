@@ -1,18 +1,3 @@
-<?php
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Layout;
-use Livewire\Volt\Component;
-
-new #[Layout('components.layouts.auth')] class extends Component {
-    public string $password = '';
-
-    /**
-     * Confirm the current user's password.
-     */
-
-}; ?>
 
 <div class="flex flex-col gap-6">
     <x-auth-header

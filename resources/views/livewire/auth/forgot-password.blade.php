@@ -1,17 +1,3 @@
-<?php
-
-use Illuminate\Support\Facades\Password;
-use Livewire\Attributes\Layout;
-use Livewire\Volt\Component;
-
-new #[Layout('components.layouts.auth')] class extends Component {
-    public string $email = '';
-
-    /**
-     * Send a password reset link to the provided email address.
-     */
-
-}; ?>
 
 <div class="flex flex-col gap-6">
     <x-auth-header :title="__('Forgot password')" :description="__('Enter your email to receive a password reset link')" />
