@@ -2,12 +2,15 @@
 
 namespace App\Controllers\User;
 
+use App\DTO\User\UpdatePasswordData;
+use App\Livewire\Actions\Logout;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
-use App\Livewire\Actions\Logout;
 
 class UserController extends Controller
 {
@@ -44,26 +47,21 @@ class UserController extends Controller
        
     }
 
-    public function updatePassword(): void
+    public function updatePassword(Request $request): RedirectResponse
     {
-        try {
-            $validated = $this->validate([
-                'current_password' => ['required', 'string', 'current_password'],
-                'password' => ['required', 'string', Password::defaults(), 'confirmed'],
-            ]);
-        } catch (ValidationException $e) {
-            $this->reset('current_password', 'password', 'password_confirmation');
-
-            throw $e;
-        }
-
-        Auth::user()->update([
-            'password' => Hash::make($validated['password']),
+        $validated = $request->validate([
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+            'password_confirmation' => ['required', 'string'],
         ]);
 
-        $this->reset('current_password', 'password', 'password_confirmation');
+        $passwordData = UpdatePasswordData::fromValidatedData($request->user(), $validated);
 
-        $this->dispatch('password-updated');
+        $passwordData->user->update([
+            'password' => Hash::make($passwordData->password),
+        ]);
+
+        return back()->with('status', 'password-updated');
     }
 
     /**
