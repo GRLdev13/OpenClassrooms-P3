@@ -3,30 +3,20 @@
 namespace App\Controllers\Tags;
 
 use App\Models\Tag;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
-class TagsController
+class TagsController extends Controller
 {
-    public $name = '';
-
-    protected $rules = [
-        'name' => 'required|string|max:50|unique:tags,name',
-    ];
-
-    public function save()
+    public function store(Request $request): RedirectResponse
     {
-        $this->validate();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:50', 'unique:tags,name'],
+        ]);
 
-        Tag::create(['name' => $this->name]);
+        Tag::create(['name' => $validated['name']]);
 
-        $this->reset('name');
-
-        $this->dispatch('tagCreated');
-
-        session()->flash('message', 'Tag added!');
-    }
-
-    public function render()
-    {
-        return view('livewire.tag-form');
+        return back()->with('message', 'Tag added!');
     }
 }

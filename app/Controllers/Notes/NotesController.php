@@ -2,66 +2,36 @@
 
 namespace App\Controllers\Notes;
 
-use Livewire\Component;
 use App\Models\Note;
-use App\Models\Tag;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class NotesController
+class NotesController extends Controller
 {
-    // public $notes;
-    public $text = '';
-    public $tag_id = '';
-    public $tags;
-
-    protected $rules = [
-        'text' => 'required|string',
-        'tag_id' => 'required|exists:tags,id',
-    ];
-    protected $listeners = ['tagCreated' => 'refreshTags'];
-
-    public function mount()
+    public function store(Request $request): RedirectResponse
     {
-        $this->tags = Tag::all();
-        $this->loadNotes();
-    }
-
-    public function loadNotes()
-    {
-        $this->notes = Note::with('tag')->where('user_id', Auth::id())->latest()->get();
-    }
-
-    public function refreshTags()
-    {
-        $this->tags = \App\Models\Tag::all();
-    }
-
-    public function save()
-    {
-        $this->validate();
+        $validated = $request->validate([
+            'text' => ['required', 'string'],
+            'tag_id' => ['required', 'exists:tags,id'],
+        ]);
 
         Note::create([
             'user_id' => Auth::id(),
-            'tag_id' => $this->tag_id,
-            'text' => $this->text,
+            'tag_id' => $validated['tag_id'],
+            'text' => $validated['text'],
         ]);
 
-        $this->text = '';
-        $this->tag_id = '';
-
-        $this->loadNotes();
-
-        session()->flash('message', 'Note added.');
+        return back()->with('message', 'Note added.');
     }
 
-    public function delete($noteId)
+    public function destroy(Note $note): RedirectResponse
     {
-        Note::where('id', $noteId)->where('user_id', Auth::id())->delete();
-        $this->loadNotes();
-    }
+        abort_unless($note->user_id === Auth::id(), 403);
 
-    public function render()
-    {
-        return view('livewire.notes');
+        $note->delete();
+
+        return back()->with('message', 'Note deleted.');
     }
 }
