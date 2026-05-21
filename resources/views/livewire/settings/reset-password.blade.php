@@ -1,3 +1,3 @@
 <x-layouts.auth :title="__('Reset password')">
-    @include('livewire.auth.reset-password')
+    @include('user.reset-password')
 </x-layouts.auth>
