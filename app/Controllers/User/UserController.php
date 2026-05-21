@@ -87,13 +87,7 @@ class UserController extends Controller
         return back()->with('status', 'password-updated');
     }
 
-    /**
-     * Reset the password for the given user.
-     */
-    public function resetPassword(): void
-    {
-      
-    }
+
 
         public function deleteUser(Logout $logout): void
     {
