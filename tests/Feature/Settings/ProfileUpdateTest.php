@@ -50,7 +50,7 @@ test('user can delete their account', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.delete-user-form')
+    $response = Volt::test('settings.confirm-delete-user-modal')
         ->set('password', 'password')
         ->call('deleteUser');
 
@@ -67,7 +67,7 @@ test('correct password must be provided to delete account', function () {
 
     $this->actingAs($user);
 
-    $response = Volt::test('settings.delete-user-form')
+    $response = Volt::test('settings.confirm-delete-user-modal')
         ->set('password', 'wrong-password')
         ->call('deleteUser');
 
