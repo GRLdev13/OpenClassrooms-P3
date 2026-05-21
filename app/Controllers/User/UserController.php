@@ -2,6 +2,8 @@
 
 namespace App\Controllers\User;
 
+use App\DTO\User\LoginData;
+use App\DTO\User\RegisterUserData;
 use App\DTO\User\UpdatePasswordData;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
@@ -12,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -22,12 +23,9 @@ class UserController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $loginData = LoginData::fromRequest($request);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (! Auth::attempt($loginData->credentials(), $loginData->remember)) {
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
@@ -64,15 +62,9 @@ class UserController extends Controller
      */
     public function register(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'string', 'confirmed', Password::defaults()],
-        ]);
+        $registerData = RegisterUserData::fromRequest($request);
 
-        $validated['password'] = Hash::make($validated['password']);
-
-        event(new Registered($user = User::create($validated)));
+        event(new Registered($user = User::create($registerData->toUserAttributes())));
 
         Auth::login($user);
 
@@ -86,13 +78,7 @@ class UserController extends Controller
      */
     public function updatePassword(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'string', 'current_password'],
-            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
-            'password_confirmation' => ['required', 'string'],
-        ]);
-
-        $passwordData = UpdatePasswordData::fromValidatedData($request->user(), $validated);
+        $passwordData = UpdatePasswordData::fromRequest($request->user(), $request);
 
         $passwordData->user->update([
             'password' => Hash::make($passwordData->password),

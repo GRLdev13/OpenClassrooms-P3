@@ -3,6 +3,8 @@
 namespace App\DTO\User;
 
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
 
 final class UpdatePasswordData
 {
@@ -22,5 +24,16 @@ final class UpdatePasswordData
             password: $validated['password'],
             passwordConfirmation: $validated['password_confirmation'],
         );
+    }
+
+    public static function fromRequest(User $user, Request $request): self
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+            'password_confirmation' => ['required', 'string'],
+        ]);
+
+        return self::fromValidatedData($user, $validated);
     }
 }
