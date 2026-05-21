@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class NotesController extends Controller
 {
+    /**
+     * Endpoint: POST /notes (route: notes.store)
+     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -26,6 +29,9 @@ class NotesController extends Controller
         return back()->with('message', 'Note added.');
     }
 
+    /**
+     * Endpoint: DELETE /notes/{note} (route: notes.destroy)
+     */
     public function destroy(Note $note): RedirectResponse
     {
         abort_unless($note->user_id === Auth::id(), 403);

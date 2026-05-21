@@ -9,6 +9,9 @@ use Illuminate\Routing\Controller;
 
 class TagsController extends Controller
 {
+    /**
+     * Endpoint: POST /tags (route: tags.store)
+     */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
