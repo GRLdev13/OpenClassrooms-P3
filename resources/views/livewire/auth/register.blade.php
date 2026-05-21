@@ -5,10 +5,13 @@
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="register" class="flex flex-col gap-6">
+    <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+        @csrf
+
         <!-- Name -->
         <flux:input
-            wire:model="name"
+            name="name"
+            :value="old('name')"
             :label="__('Name')"
             type="text"
             required
@@ -19,7 +22,8 @@
 
         <!-- Email Address -->
         <flux:input
-            wire:model="email"
+            name="email"
+            :value="old('email')"
             :label="__('Email address')"
             type="email"
             required
@@ -29,7 +33,7 @@
 
         <!-- Password -->
         <flux:input
-            wire:model="password"
+            name="password"
             :label="__('Password')"
             type="password"
             required
@@ -40,7 +44,7 @@
 
         <!-- Confirm Password -->
         <flux:input
-            wire:model="password_confirmation"
+            name="password_confirmation"
             :label="__('Confirm password')"
             type="password"
             required
