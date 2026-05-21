@@ -2,6 +2,8 @@
 
 namespace App\Controllers\Notes;
 
+use App\DTO\Notes\DeleteNoteData;
+use App\DTO\Notes\StoreNoteData;
 use App\Models\Note;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,16 +17,9 @@ class NotesController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'text' => ['required', 'string'],
-            'tag_id' => ['required', 'exists:tags,id'],
-        ]);
+        $noteData = StoreNoteData::fromRequest($request, (int) Auth::id());
 
-        Note::create([
-            'user_id' => Auth::id(),
-            'tag_id' => $validated['tag_id'],
-            'text' => $validated['text'],
-        ]);
+        Note::create($noteData->toAttributes());
 
         return back()->with('message', 'Note added.');
     }
@@ -34,9 +29,11 @@ class NotesController extends Controller
      */
     public function destroy(Note $note): RedirectResponse
     {
-        abort_unless($note->user_id === Auth::id(), 403);
+        $noteData = DeleteNoteData::fromRoute($note, (int) Auth::id());
 
-        $note->delete();
+        abort_unless($noteData->belongsToUser(), 403);
+
+        $noteData->note->delete();
 
         return back()->with('message', 'Note deleted.');
     }

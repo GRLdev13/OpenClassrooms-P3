@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Tags;
 
+use App\DTO\Tags\StoreTagData;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,11 +15,9 @@ class TagsController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:50', 'unique:tags,name'],
-        ]);
+        $tagData = StoreTagData::fromRequest($request);
 
-        Tag::create(['name' => $validated['name']]);
+        Tag::create($tagData->toAttributes());
 
         return back()->with('message', 'Tag added!');
     }
