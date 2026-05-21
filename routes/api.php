@@ -29,9 +29,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/confirm-password', [PasswordController::class, 'showConfirmPassword'])->name('password.confirm');
     Route::post('/confirm-password', [PasswordController::class, 'confirmPassword'])->name('password.confirm.store');
     Route::post('/notes', [NotesController::class, 'store'])->name('notes.store');
-    Route::delete('/notes/{note}', [NotesController::class, 'destroy'])->name('notes.destroy');
+    Route::delete('/notes/{note}', [NotesController::class, 'delete'])->name('notes.delete');
     Route::post('/tags', [TagsController::class, 'store'])->name('tags.store');
     Route::post('/user/password', [UserController::class, 'updatePassword'])->name('password');
+    Route::post('/user', [UserController::class, 'updateUser'])->name('user.update');
 });
 
 

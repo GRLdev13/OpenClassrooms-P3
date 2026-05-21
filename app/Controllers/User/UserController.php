@@ -5,6 +5,7 @@ namespace App\Controllers\User;
 use App\DTO\User\LoginData;
 use App\DTO\User\RegisterUserData;
 use App\DTO\User\UpdatePasswordData;
+use App\DTO\User\UpdateUserData;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -87,9 +88,10 @@ class UserController extends Controller
         return back()->with('status', 'password-updated');
     }
 
-
-
-        public function deleteUser(Logout $logout): void
+     /**
+     * Endpoint: DELETE /user (route: user)
+     */
+    public function deleteUser(Logout $logout): void
     {
         $this->validate([
             'password' => ['required', 'string', 'current_password'],
@@ -98,5 +100,27 @@ class UserController extends Controller
         tap(Auth::user(), $logout(...))->delete();
 
         $this->redirect('/', navigate: true);
+    }
+
+    /**
+     * Endpoint: POST /Update (route: user.update)
+     */
+    public function updateUser(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless($user instanceof User, 403);
+
+        $updateUserData = UpdateUserData::fromRequest($user, $request);
+
+        $attributes = $updateUserData->toUserAttributes();
+
+        if ($updateUserData->emailHasChanged()) {
+            $attributes['email_verified_at'] = null;
+        }
+
+        $updateUserData->user->forceFill($attributes)->save();
+
+        return back()->with('status', 'profile-updated');
     }
 }
