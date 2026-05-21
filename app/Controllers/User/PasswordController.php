@@ -1,30 +1,42 @@
 <?php
 namespace App\Controllers\User;
 
-use Livewire\Component;
-use App\Models\Tag;
-use Illuminate\Auth\Events\Lockout;
+use App\DTO\User\ConfirmPasswordData;
+use App\DTO\User\ResetPasswordData;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Validate;
 
-class PasswordController
+class PasswordController extends Controller
 {
-    public function confirmPassword(): void
+    /**
+     * Endpoint: GET /confirm-password (route: password.confirm)
+     */
+    public function showConfirmPassword(): View
     {
-        $this->validate([
-            'password' => ['required', 'string'],
-        ]);
+        return view('confirm-password');
+    }
 
-        if (! Auth::guard('web')->validate([
-            'email' => Auth::user()->email,
-            'password' => $this->password,
-        ])) {
+    /**
+     * Endpoint: POST /confirm-password (route: password.confirm.store)
+     */
+    public function confirmPassword(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        abort_unless($user instanceof User, 403);
+
+        $passwordData = ConfirmPasswordData::fromRequest($user, $request);
+
+        if (! Auth::guard('web')->validate($passwordData->credentials())) {
             throw ValidationException::withMessages([
                 'password' => __('auth.password'),
             ]);
@@ -32,6 +44,45 @@ class PasswordController
 
         session(['auth.password_confirmed_at' => time()]);
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        return redirect()->intended(route('dashboard'));
+    }
+
+    /**
+     * Endpoint: GET /reset-password/{token} (route: password.reset)
+     */
+    public function showResetPassword(Request $request, string $token): View
+    {
+        return view('reset-password', [
+            'email' => $request->query('email', ''),
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Endpoint: POST /reset-password (route: password.update)
+     */
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $passwordData = ResetPasswordData::fromRequest($request);
+
+        $status = PasswordBroker::reset(
+            $passwordData->brokerCredentials(),
+            function (User $user) use ($passwordData): void {
+                $user->forceFill([
+                    'password' => Hash::make($passwordData->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            },
+        );
+
+        if ($status !== PasswordBroker::PASSWORD_RESET) {
+            throw ValidationException::withMessages([
+                'email' => __($status),
+            ]);
+        }
+
+        return redirect()->route('login')->with('status', __($status));
     }
 }

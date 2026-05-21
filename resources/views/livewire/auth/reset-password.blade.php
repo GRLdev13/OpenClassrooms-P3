@@ -5,10 +5,15 @@
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="resetPassword" class="flex flex-col gap-6">
+    <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
+        @csrf
+
+        <input type="hidden" name="token" value="{{ $token ?? '' }}">
+
         <!-- Email Address -->
         <flux:input
-            wire:model="email"
+            name="email"
+            :value="old('email', $email ?? '')"
             :label="__('Email')"
             type="email"
             required
@@ -17,7 +22,7 @@
 
         <!-- Password -->
         <flux:input
-            wire:model="password"
+            name="password"
             :label="__('Password')"
             type="password"
             required
@@ -28,7 +33,7 @@
 
         <!-- Confirm Password -->
         <flux:input
-            wire:model="password_confirmation"
+            name="password_confirmation"
             :label="__('Confirm password')"
             type="password"
             required
