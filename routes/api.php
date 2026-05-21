@@ -30,7 +30,7 @@ Route::middleware(['guest'])->group(function () {
         Route::post('/confirm-password', [PasswordController::class, 'confirmPassword'])->name('password.confirm.store');
         Route::post('/notes', [NotesController::class, 'store'])->name('notes.store');
         Route::delete('/notes/{note}', [NotesController::class, 'delete'])->name('notes.delete');
-        Route::delete('/delete', [UserController::class, 'delete'])->name('user.delete');
+        Route::delete('/delete', [UserController::class, 'deleteUser'])->name('user.delete');
         Route::post('/tags', [TagsController::class, 'store'])->name('tags.store');
         Route::post('/settings/password', [PasswordController::class, 'updatePassword'])->name('settings.password.update');
         Route::post('/user', [UserController::class, 'updateUser'])->name('user.update');
