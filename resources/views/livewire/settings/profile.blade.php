@@ -56,7 +56,6 @@
                 @endif
             </div>
         </form>
-
-        <livewire:settings.delete-user-form />
+        @include('livewire.settings.confirm-delete-user-modal')
     </x-settings.layout>
 </section>

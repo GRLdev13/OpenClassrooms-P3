@@ -20,20 +20,21 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/register', [UserController::class, 'register'])->name('register.store');
     Route::get('/reset-password/{token}', [PasswordController::class, 'showResetPassword'])->name('password.reset');
     Route::post('/reset-password', [PasswordController::class, 'resetPassword'])->name('password.update');
-});
-
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [IndexController::class, 'dashboard'])->name('dashboard');
-    Route::get('/confirm-password', [PasswordController::class, 'showConfirmPassword'])->name('password.confirm');
-    Route::post('/confirm-password', [PasswordController::class, 'confirmPassword'])->name('password.confirm.store');
-    Route::post('/notes', [NotesController::class, 'store'])->name('notes.store');
-    Route::delete('/notes/{note}', [NotesController::class, 'delete'])->name('notes.delete');
-    Route::post('/tags', [TagsController::class, 'store'])->name('tags.store');
-    Route::post('/settings/password', [PasswordController::class, 'updatePassword'])->name('settings.password.update');
-    Route::post('/user', [UserController::class, 'updateUser'])->name('user.update');
-});
+    });
+    
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+    
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/dashboard', [IndexController::class, 'dashboard'])->name('dashboard');
+        Route::get('/confirm-password', [PasswordController::class, 'showConfirmPassword'])->name('password.confirm');
+        Route::post('/confirm-password', [PasswordController::class, 'confirmPassword'])->name('password.confirm.store');
+        Route::post('/notes', [NotesController::class, 'store'])->name('notes.store');
+        Route::delete('/notes/{note}', [NotesController::class, 'delete'])->name('notes.delete');
+        Route::delete('/delete', [UserController::class, 'delete'])->name('user.delete');
+        Route::post('/tags', [TagsController::class, 'store'])->name('tags.store');
+        Route::post('/settings/password', [PasswordController::class, 'updatePassword'])->name('settings.password.update');
+        Route::post('/user', [UserController::class, 'updateUser'])->name('user.update');
+        });
 
 
 //example route with parameters:

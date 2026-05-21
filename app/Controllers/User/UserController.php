@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 class UserController extends Controller
 {
     /**
-     * Endpoint: POST /login (route: login.store)
+     * Endpoint: POST /login (route: login)
      */
     public function login(Request $request): RedirectResponse
     {
@@ -72,20 +72,19 @@ class UserController extends Controller
         return redirect()->intended(route('dashboard'));
     }
 
-
-
      /**
      * Endpoint: DELETE /user (route: user)
      */
-    public function deleteUser(Logout $logout): void
+    public function deleteUser(Logout $logout): RedirectResponse
     {
-        $this->validate([
-            'password' => ['required', 'string', 'current_password'],
-        ]);
+        //check if password is correct
+       $user = Auth::user();
+       $logout(); // Perform some side effect
+       $user->delete(); // Now perform the deletion
 
-        tap(Auth::user(), $logout(...))->delete();
-
-        $this->redirect('/', navigate: true);
+        // Auth::user()->delete();
+        // $this->redirect('/', navigate: true);
+        return redirect()->route('index');
     }
 
     /**
