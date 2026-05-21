@@ -5,6 +5,7 @@ use Livewire\Volt\Volt;
 use App\Controllers\Index\IndexController;
 use App\Controllers\Notes\NotesController;
 use App\Controllers\Tags\TagsController;
+use App\Controllers\User\PasswordController;
 use App\Controllers\User\UserController;
 
 //TODO Guard for redirect
@@ -17,12 +18,16 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('login.store');
     Route::get('/register', [UserController::class, 'showRegister'])->name('register');
     Route::post('/register', [UserController::class, 'register'])->name('register.store');
+    Route::get('/reset-password/{token}', [PasswordController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [PasswordController::class, 'resetPassword'])->name('password.update');
 });
 
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [IndexController::class, 'dashboard'])->name('dashboard');
+    Route::get('/confirm-password', [PasswordController::class, 'showConfirmPassword'])->name('password.confirm');
+    Route::post('/confirm-password', [PasswordController::class, 'confirmPassword'])->name('password.confirm.store');
     Route::post('/notes', [NotesController::class, 'store'])->name('notes.store');
     Route::delete('/notes/{note}', [NotesController::class, 'destroy'])->name('notes.destroy');
     Route::post('/tags', [TagsController::class, 'store'])->name('tags.store');

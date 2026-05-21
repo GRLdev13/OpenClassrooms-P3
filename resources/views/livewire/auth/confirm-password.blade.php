@@ -8,14 +8,16 @@
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="confirmPassword" class="flex flex-col gap-6">
+    <form method="POST" action="{{ route('password.confirm') }}" class="flex flex-col gap-6">
+        @csrf
+
         <!-- Password -->
         <flux:input
-            wire:model="password"
+            name="password"
             :label="__('Password')"
             type="password"
             required
-            autocomplete="new-password"
+            autocomplete="current-password"
             :placeholder="__('Password')"
             viewable
         />
