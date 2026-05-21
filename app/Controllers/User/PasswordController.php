@@ -1,16 +1,18 @@
 <?php
+
 namespace App\Controllers\User;
 
 use App\DTO\User\ConfirmPasswordData;
 use App\DTO\User\ResetPasswordData;
+use App\DTO\User\UpdatePasswordData;
+use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -84,5 +86,23 @@ class PasswordController extends Controller
         }
 
         return redirect()->route('login')->with('status', __($status));
+    }
+
+    /**
+     * Endpoint: POST /settings/password (route: settings.password.update)
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless($user instanceof User, 403);
+
+        $passwordData = UpdatePasswordData::fromRequest($user, $request);
+
+        $passwordData->user->update([
+            'password' => Hash::make($passwordData->password),
+        ]);
+
+        return back()->with('status', 'password-updated');
     }
 }

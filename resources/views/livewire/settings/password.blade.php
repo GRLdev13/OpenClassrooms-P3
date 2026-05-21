@@ -3,8 +3,8 @@
     @include('partials.settings-heading')
 
     <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
-        @csrf
-        <form method="POST" action="{{ route('password') }}" class="mt-6 space-y-6">
+        <form method="POST" action="{{ route('settings.password.update') }}" class="mt-6 space-y-6">
+            @csrf
 
             <flux:input
                 name="current_password"

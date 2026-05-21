@@ -4,7 +4,6 @@ namespace App\Controllers\User;
 
 use App\DTO\User\LoginData;
 use App\DTO\User\RegisterUserData;
-use App\DTO\User\UpdatePasswordData;
 use App\DTO\User\UpdateUserData;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
@@ -14,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -55,7 +53,7 @@ class UserController extends Controller
      */
     public function showRegister(): View|RedirectResponse
     {
-        return view('register');
+        return view('user.settings.register');
     }
 
     /**
@@ -74,19 +72,7 @@ class UserController extends Controller
         return redirect()->intended(route('dashboard'));
     }
 
-    /**
-     * Endpoint: POST /user/password (route: password)
-     */
-    public function updatePassword(Request $request): RedirectResponse
-    {
-        $passwordData = UpdatePasswordData::fromRequest($request->user(), $request);
 
-        $passwordData->user->update([
-            'password' => Hash::make($passwordData->password),
-        ]);
-
-        return back()->with('status', 'password-updated');
-    }
 
      /**
      * Endpoint: DELETE /user (route: user)

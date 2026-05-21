@@ -25,9 +25,9 @@ class NotesController extends Controller
     }
 
     /**
-     * Endpoint: DELETE /notes/{note} (route: notes.destroy)
+     * Endpoint: DELETE /notes/{note} (route: notes.delete)
      */
-    public function destroy(Note $note): RedirectResponse
+    public function delete(Note $note): RedirectResponse
     {
         $noteData = DeleteNoteData::fromRoute($note, (int) Auth::id());
 

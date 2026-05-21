@@ -30,7 +30,7 @@
                 <small class="text-gray-500">Tag: {{ $note->tag->name ?? '-' }}</small>
             </div>
 
-            <form method="POST" action="{{ route('notes.destroy', $note) }}">
+            <form method="POST" action="{{ route('notes.delete', $note) }}">
                 @csrf
                 @method('DELETE')
 
